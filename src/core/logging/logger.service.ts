@@ -19,6 +19,7 @@ export class EmojiLogger implements LoggerService {
 	}
 
 	private writeToFile(message: string) {
+		// eslint-disable-next-line no-console
 		console.log(message);
 	}
 }
