@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
-import { EmojiLogger } from '@core/logging/logger.service';
+import { LoggerService } from '@/core/logger/logger.service';
 
 @Catch(HttpException)
 export class AppExceptionsFilter implements ExceptionFilter {
@@ -18,7 +18,7 @@ export class AppExceptionsFilter implements ExceptionFilter {
 		@Optional()
 		@Inject(HttpAdapterHost)
 		private readonly httpAdapterHost?: HttpAdapterHost,
-		private readonly emojiLogger?: EmojiLogger
+		private readonly logger?: LoggerService
 	) {}
 
 	catch(exception: HttpException, host: ArgumentsHost) {
@@ -49,10 +49,7 @@ export class AppExceptionsFilter implements ExceptionFilter {
 			timestamp: new Date().toISOString()
 		};
 
-		this.emojiLogger?.error(
-			`HTTP Status: ${status} | Error Message: ${message} | Request URL: ${path}`,
-			exception.stack ?? ''
-		);
+		this.logger?.error(`${status} ${message} ${path}`, exception.stack, 'HTTP', errorResponse);
 
 		response.status(status).json(errorResponse);
 	}
