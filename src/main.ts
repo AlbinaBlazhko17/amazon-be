@@ -2,14 +2,14 @@ import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from '@app/app.module';
 
-import { EmojiLogger } from './core/logging/logger.service';
+import { LoggerService } from '@/core/logger/logger.service';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule, {
 		bufferLogs: true
 	});
 
-	const logger = app.get(EmojiLogger);
+	const logger = app.get(LoggerService);
 
 	app.useLogger(logger);
 
