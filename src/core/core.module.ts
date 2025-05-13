@@ -1,8 +1,9 @@
 import { Global, type MiddlewareConsumer, Module, type NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER, HttpAdapterHost } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR, HttpAdapterHost } from '@nestjs/core';
 
 import { AppExceptionsFilter } from './filters/app-exceptions.filter';
+import { TransformResponseInterceptor } from './interceptors/transform-response.interceptor';
 import { LoggerService } from './logger/logger.service';
 import appConfig from '@/config/app.config';
 import { PrismaModule } from '@/prisma/prisma.module';
@@ -23,6 +24,10 @@ import { PrismaModule } from '@/prisma/prisma.module';
 				return new AppExceptionsFilter(httpAdapterHost, logger);
 			},
 			inject: [HttpAdapterHost, LoggerService]
+		},
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: TransformResponseInterceptor
 		},
 		LoggerService
 	],
