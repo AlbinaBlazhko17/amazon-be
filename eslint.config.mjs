@@ -7,7 +7,7 @@ import eslint from '@eslint/js';
 
 export default tseslint.config(
 	{
-		ignores: ['eslint.config.mjs']
+		ignores: ['eslint.config.mjs', 'src/prisma/generated']
 	},
 	eslint.configs.recommended,
 	...tseslint.configs.recommendedTypeChecked,
