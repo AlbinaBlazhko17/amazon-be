@@ -17,6 +17,8 @@
 		"strictBindCallApply": false,
 		"noFallthroughCasesInSwitch": false,
 		"moduleResolution": "node",
+		"noUnusedLocals": true,
+		"noUncheckedIndexedAccess": true,
 		"baseUrl": ".",
 		"resolveJsonModule": true,
 		"paths": {
