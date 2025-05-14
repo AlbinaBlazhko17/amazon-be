@@ -1,5 +1,8 @@
+import { redisStore } from 'cache-manager-redis-store';
+
+import { CacheModule } from '@nestjs/cache-manager';
 import { Global, type MiddlewareConsumer, Module, type NestModule } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, HttpAdapterHost } from '@nestjs/core';
 
 import { AppExceptionsFilter } from './filters/app-exceptions.filter';
@@ -14,6 +17,24 @@ import { PrismaModule } from '@/prisma/prisma.module';
 		ConfigModule.forRoot({
 			isGlobal: true,
 			load: [appConfig]
+		}),
+		CacheModule.registerAsync({
+			imports: [ConfigModule],
+			useFactory: (configService: ConfigService) => {
+				const username = configService.get('redis.username');
+				const password = configService.get('redis.password');
+				return {
+					isGlobal: true,
+					store: redisStore,
+					host: configService.get('redis.host'),
+					port: configService.get('redis.port'),
+					...(username && { username }),
+					...(password && { password }),
+					no_ready_check: true,
+					ttl: 10
+				};
+			},
+			inject: [ConfigService]
 		}),
 		PrismaModule
 	],
