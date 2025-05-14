@@ -10,7 +10,7 @@ export class LoggerService implements NestLogger {
 	constructor(private readonly configService: ConfigService) {
 		const { combine, timestamp, printf, colorize, json } = winston.format;
 
-		const isDevelopment = this.configService.get('NODE_ENV') === 'development';
+		const isDevelopment = this.configService.get('environment') === 'development';
 
 		const logFormat = isDevelopment
 			? combine(
