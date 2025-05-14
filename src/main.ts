@@ -1,3 +1,4 @@
+import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 
 import { ValidationPipe } from '@nestjs/common';
@@ -17,6 +18,7 @@ async function bootstrap() {
 	app.useLogger(logger);
 
 	app.use(helmet());
+	app.use(cookieParser());
 
 	app.enableCors({
 		origin: process.env.CORS_ORIGIN,
