@@ -49,7 +49,7 @@ export class AppExceptionsFilter implements ExceptionFilter {
 			timestamp: new Date().toISOString()
 		};
 
-		this.logger?.error(`${status} ${message} ${path}`, exception.stack, 'HTTP', errorResponse);
+		this.logger?.error(`${status} ${message}`, exception.stack, 'HTTP');
 
 		response.status(status).json(errorResponse);
 	}
