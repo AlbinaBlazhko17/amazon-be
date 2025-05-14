@@ -1,0 +1,32 @@
+enum OrderStatus {
+  PENDING
+  PAYED
+  SHIPPED
+  DELIVERED
+}
+
+model Order {
+  id     Int         @id @default(autoincrement())
+  status OrderStatus @default(PENDING)
+  items  OrderItem[]
+
+  userId Int?  @map("user_id")
+  User   User? @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model OrderItem {
+  id         Int   @id @default(autoincrement())
+  quantity   Int
+  totalPrice Float @map("total_price")
+
+  orderId   Int?     @map("order_id")
+  Order     Order?   @relation(fields: [orderId], references: [id])
+  productId Int?     @map("product_id")
+  Product   Product? @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
