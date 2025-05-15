@@ -3,9 +3,11 @@ import helmet from 'helmet';
 
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from '@app/app.module';
 
+import { config } from './config/swagger.config';
 import { LoggerService } from '@/core/logger/logger.service';
 
 async function bootstrap() {
@@ -36,6 +38,9 @@ async function bootstrap() {
 			}
 		})
 	);
+
+	const document = SwaggerModule.createDocument(app, config);
+	SwaggerModule.setup('docs', app, document);
 
 	await app.listen(process.env.PORT ?? 3000);
 }
