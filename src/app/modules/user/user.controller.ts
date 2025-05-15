@@ -10,6 +10,14 @@ import {
 	Patch,
 	Req
 } from '@nestjs/common';
+import {
+	ApiBearerAuth,
+	ApiBody,
+	ApiOperation,
+	ApiParam,
+	ApiResponse,
+	ApiTags
+} from '@nestjs/swagger';
 
 import { Auth } from '../auth/decorators/auth.decorator';
 
@@ -17,6 +25,8 @@ import { UserDto } from './user.dto';
 import { UserService } from './user.service';
 import { removePassword } from '@/utils/helpers/remove-password';
 
+@ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
 	constructor(private readonly userService: UserService) {}
@@ -24,6 +34,8 @@ export class UsersController {
 	@Auth()
 	@HttpCode(200)
 	@Get()
+	@ApiOperation({ summary: 'Get all users' })
+	@ApiResponse({ status: 200, description: 'Return all users' })
 	async findAll() {
 		return this.userService.findAll();
 	}
@@ -31,6 +43,10 @@ export class UsersController {
 	@Auth()
 	@HttpCode(200)
 	@Get('/favorites/:id')
+	@ApiOperation({ summary: 'Get user favorites by ID' })
+	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
+	@ApiResponse({ status: 200, description: 'Return user favorites' })
+	@ApiResponse({ status: 400, description: 'Invalid ID format' })
 	async findFavorites(@Req() req: Request) {
 		const idFromParams = req.params.id;
 
@@ -46,6 +62,10 @@ export class UsersController {
 	@Auth()
 	@HttpCode(200)
 	@Get(':id')
+	@ApiOperation({ summary: 'Get user by ID' })
+	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
+	@ApiResponse({ status: 200, description: 'Return user by ID' })
+	@ApiResponse({ status: 400, description: 'Invalid ID format' })
 	async findById(@Req() req: Request) {
 		const idFromParams = req.params.id;
 
@@ -61,6 +81,11 @@ export class UsersController {
 	@Auth()
 	@HttpCode(200)
 	@Patch(':id')
+	@ApiOperation({ summary: 'Update user' })
+	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
+	@ApiBody({ type: UserDto, description: 'User data to update' })
+	@ApiResponse({ status: 200, description: 'User updated successfully' })
+	@ApiResponse({ status: 400, description: 'Invalid ID format' })
 	async update(
 		@Req()
 		req: Request,
@@ -82,6 +107,10 @@ export class UsersController {
 	@Auth()
 	@HttpCode(200)
 	@Delete(':id')
+	@ApiOperation({ summary: 'Delete user' })
+	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
+	@ApiResponse({ status: 200, description: 'User deleted successfully' })
+	@ApiResponse({ status: 400, description: 'Invalid ID format or User not found' })
 	async delete(@Req() req: Request) {
 		const idFromParams = req.params.id;
 
