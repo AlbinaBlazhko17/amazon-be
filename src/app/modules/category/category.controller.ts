@@ -1,14 +1,13 @@
-import { Request } from 'express';
-
 import {
-	BadRequestException,
 	Body,
 	Controller,
 	Delete,
 	Get,
+	HttpCode,
+	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
-	Req,
 	Version
 } from '@nestjs/common';
 import {
@@ -24,6 +23,7 @@ import { Auth } from '../auth/decorators/auth.decorator';
 
 import { CategoryDto } from './category.dto';
 import { CategoryService } from './category.service';
+import { SlugValidationPipe } from '@/core/pipes/slug-validation.pipe';
 
 @ApiTags('categories')
 @Controller('categories')
@@ -45,16 +45,8 @@ export class CategoryController {
 	@ApiResponse({ status: 200, description: 'Return a category by ID' })
 	@ApiResponse({ status: 400, description: 'Invalid ID format' })
 	@ApiResponse({ status: 404, description: 'Category not found' })
-	async findById(@Req() req: Request) {
-		const idFromParams = req.params.id;
-
-		if (isNaN(Number(idFromParams))) {
-			throw new BadRequestException('Invalid ID format');
-		}
-
-		const categoryId = Number(idFromParams);
-
-		return await this.categoryService.findById(categoryId);
+	async findById(@Param('id', ParseIntPipe) id: number) {
+		return await this.categoryService.findById(id);
 	}
 
 	@Get('slug/:slug')
@@ -64,14 +56,8 @@ export class CategoryController {
 	@ApiResponse({ status: 200, description: 'Return a category by slug' })
 	@ApiResponse({ status: 400, description: 'Invalid slug format' })
 	@ApiResponse({ status: 404, description: 'Category not found' })
-	async findBySlug(@Req() req: Request) {
-		const slugFromParams = req.params.slug;
-
-		if (!slugFromParams) {
-			throw new BadRequestException('Invalid slug format');
-		}
-
-		return await this.categoryService.findBySlug(slugFromParams);
+	async findBySlug(@Param('slug', SlugValidationPipe) slug: string) {
+		return await this.categoryService.findBySlug(slug);
 	}
 
 	@Auth()
@@ -97,37 +83,22 @@ export class CategoryController {
 	@ApiResponse({ status: 400, description: 'Invalid ID format' })
 	@ApiResponse({ status: 401, description: 'Unauthorized' })
 	@ApiResponse({ status: 404, description: 'Category not found' })
-	async update(@Req() req: Request, @Body() body: CategoryDto) {
-		const idFromParams = req.params.id;
-
-		if (isNaN(Number(idFromParams))) {
-			throw new BadRequestException('Invalid ID format');
-		}
-
-		const categoryId = Number(idFromParams);
-
-		return await this.categoryService.update(categoryId, body);
+	async update(@Param('id', ParseIntPipe) id: number, @Body() body: CategoryDto) {
+		return await this.categoryService.update(id, body);
 	}
 
 	@Auth()
 	@Delete(':id')
 	@Version('1.0')
+	@HttpCode(204)
 	@ApiBearerAuth('JWT-auth')
 	@ApiOperation({ summary: 'Delete category' })
 	@ApiParam({ name: 'id', description: 'Category ID', example: '1' })
-	@ApiResponse({ status: 200, description: 'Category successfully deleted' })
+	@ApiResponse({ status: 204, description: 'Category successfully deleted' })
 	@ApiResponse({ status: 400, description: 'Invalid ID format' })
 	@ApiResponse({ status: 401, description: 'Unauthorized' })
 	@ApiResponse({ status: 404, description: 'Category not found' })
-	async delete(@Req() req: Request) {
-		const idFromParams = req.params.id;
-
-		if (isNaN(Number(idFromParams))) {
-			throw new BadRequestException('Invalid ID format');
-		}
-
-		const categoryId = Number(idFromParams);
-
-		return await this.categoryService.delete(categoryId);
+	async delete(@Param('id', ParseIntPipe) id: number) {
+		await this.categoryService.delete(id);
 	}
 }

@@ -1,4 +1,3 @@
-import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { CategoryController } from './category.controller';
@@ -47,7 +46,7 @@ describe('CategoryController', () => {
 		expect(controller).toBeDefined();
 	});
 
-	describe('findAll', () => {
+	describe('getAll', () => {
 		it('should return an array of categories', async () => {
 			const categories = [mockCategory];
 			mockCategoryService.findAll.mockResolvedValue(categories);
@@ -57,35 +56,21 @@ describe('CategoryController', () => {
 		});
 	});
 
-	describe('findById', () => {
+	describe('byId', () => {
 		it('should return a category by id', async () => {
 			mockCategoryService.findById.mockResolvedValue(mockCategory);
 
-			const req = { params: { id: '1' } } as any;
-			expect(await controller.findById(req)).toBe(mockCategory);
+			expect(await controller.findById(1)).toBe(mockCategory);
 			expect(categoryService.findById).toHaveBeenCalledWith(1);
-		});
-
-		it('should throw BadRequestException if id is not a number', async () => {
-			const req = { params: { id: 'abc' } } as any;
-
-			await expect(controller.findById(req)).rejects.toThrow(BadRequestException);
 		});
 	});
 
-	describe('findBySlug', () => {
+	describe('bySlug', () => {
 		it('should return a category by slug', async () => {
 			mockCategoryService.findBySlug.mockResolvedValue(mockCategory);
 
-			const req = { params: { slug: 'electronics' } } as any;
-			expect(await controller.findBySlug(req)).toBe(mockCategory);
+			expect(await controller.findBySlug('electronics')).toBe(mockCategory);
 			expect(categoryService.findBySlug).toHaveBeenCalledWith('electronics');
-		});
-
-		it('should throw BadRequestException if slug is not provided', async () => {
-			const req = { params: { slug: '' } } as any;
-
-			await expect(controller.findBySlug(req)).rejects.toThrow(BadRequestException);
 		});
 	});
 
@@ -102,31 +87,17 @@ describe('CategoryController', () => {
 		it('should update a category', async () => {
 			mockCategoryService.update.mockResolvedValue(mockCategory);
 
-			const req = { params: { id: '1' } } as any;
-			expect(await controller.update(req, mockCategoryDto)).toBe(mockCategory);
+			expect(await controller.update(1, mockCategoryDto)).toBe(mockCategory);
 			expect(categoryService.update).toHaveBeenCalledWith(1, mockCategoryDto);
-		});
-
-		it('should throw BadRequestException if id is not a number', async () => {
-			const req = { params: { id: 'abc' } } as any;
-
-			await expect(controller.update(req, mockCategoryDto)).rejects.toThrow(BadRequestException);
 		});
 	});
 
 	describe('delete', () => {
 		it('should delete a category', async () => {
-			mockCategoryService.delete.mockResolvedValue({ message: 'Success' });
+			mockCategoryService.delete.mockResolvedValue(undefined);
 
-			const req = { params: { id: '1' } } as any;
-			expect(await controller.delete(req)).toEqual({ message: 'Success' });
+			expect(await controller.delete(1)).toEqual(undefined);
 			expect(categoryService.delete).toHaveBeenCalledWith(1);
-		});
-
-		it('should throw BadRequestException if id is not a number', async () => {
-			const req = { params: { id: 'abc' } } as any;
-
-			await expect(controller.delete(req)).rejects.toThrow(BadRequestException);
 		});
 	});
 });
