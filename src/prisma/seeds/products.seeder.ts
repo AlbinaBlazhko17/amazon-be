@@ -28,21 +28,14 @@ export class ProductsSeeder {
 	}
 
 	private async createCategories(): Promise<Category[]> {
-		const categoryNames = [
-			'Electronics',
-			'Clothing',
-			'Home & Kitchen',
-			'Books',
-			'Sports & Outdoors',
-			'Beauty & Personal Care',
-			'Toys & Games',
-			'Health & Wellness',
-			'Automotive',
-			'Office Supplies'
-		];
-
 		await this.prisma.category.createMany({
-			data: categoryNames.map(name => ({ name })),
+			data: Array.from({ length: 10 }, () => {
+				const name = faker.commerce.department();
+				return {
+					name,
+					slug: faker.helpers.slugify(name).toLocaleLowerCase()
+				};
+			}),
 			skipDuplicates: true
 		});
 
@@ -52,7 +45,7 @@ export class ProductsSeeder {
 	private async createProducts(count: number, categories: Category[]): Promise<Product[]> {
 		const productData = Array.from({ length: count }, () => {
 			const name = faker.commerce.productName();
-			const slug = faker.helpers.slugify(name);
+			const slug = faker.helpers.slugify(name).toLocaleLowerCase();
 			const imageCount = faker.number.int({ min: 1, max: 5 });
 			const imagesUrl = Array.from({ length: imageCount }, () =>
 				faker.image.urlLoremFlickr({ width: 640, height: 480 })
