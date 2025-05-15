@@ -1,15 +1,21 @@
 import type { Request, Response } from 'express';
 
 import { Body, Controller, HttpCode, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { AuthDto } from './auth.dto';
 import { AuthService } from './auth.service';
 import { Auth } from './decorators/auth.decorator';
 
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
+	@ApiOperation({ summary: 'Sign in with credentials' })
+	@ApiBody({ type: AuthDto })
+	@ApiResponse({ status: 200, description: 'User successfully signed in' })
+	@ApiResponse({ status: 401, description: 'Invalid credentials' })
 	@HttpCode(200)
 	@Post('sign-in')
 	async sigIn(@Body() authDto: AuthDto, @Res({ passthrough: true }) res: Response) {
@@ -27,6 +33,10 @@ export class AuthController {
 		return responseData;
 	}
 
+	@ApiOperation({ summary: 'Register a new user' })
+	@ApiBody({ type: AuthDto })
+	@ApiResponse({ status: 200, description: 'User successfully registered' })
+	@ApiResponse({ status: 400, description: 'Invalid data or user already exists' })
 	@HttpCode(200)
 	@Post('sign-up')
 	async signUp(@Body() authDto: AuthDto, @Res({ passthrough: true }) res: Response) {
@@ -41,6 +51,10 @@ export class AuthController {
 		};
 	}
 
+	@ApiOperation({ summary: 'Sign out the current user' })
+	@ApiResponse({ status: 200, description: 'User successfully signed out' })
+	@ApiResponse({ status: 401, description: 'User not authenticated' })
+	@ApiBearerAuth()
 	@Auth()
 	@HttpCode(200)
 	@Post('sign-out')
@@ -48,6 +62,9 @@ export class AuthController {
 		return this.authService.signOut(res, req.cookies[this.authService.REFRESH_TOKEN_NAME]);
 	}
 
+	@ApiOperation({ summary: 'Refresh authentication tokens' })
+	@ApiResponse({ status: 200, description: 'Tokens successfully refreshed' })
+	@ApiResponse({ status: 401, description: 'Invalid or expired refresh token' })
 	@HttpCode(200)
 	@Post('refresh-tokens')
 	async refreshTokens(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
