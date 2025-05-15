@@ -94,7 +94,7 @@ export class UserRepository {
 								price: true,
 								imagesUrl: true,
 								categoryId: true,
-								Category: {
+								category: {
 									select: {
 										id: true,
 										name: true,
