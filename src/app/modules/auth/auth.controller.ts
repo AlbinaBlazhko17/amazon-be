@@ -65,7 +65,7 @@ export class AuthController {
 	@ApiOperation({ summary: 'Sign out the current user' })
 	@ApiResponse({ status: 200, description: 'User successfully signed out' })
 	@ApiResponse({ status: 401, description: 'User not authenticated' })
-	@ApiBearerAuth()
+	@ApiBearerAuth('JWT-auth')
 	@Auth()
 	@HttpCode(200)
 	@Post('sign-out')

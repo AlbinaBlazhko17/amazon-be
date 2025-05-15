@@ -27,7 +27,7 @@ import { UserService } from './user.service';
 import { removePassword } from '@/utils/helpers/remove-password';
 
 @ApiTags('users')
-@ApiBearerAuth()
+@ApiBearerAuth('JWT-auth')
 @Controller('users')
 export class UsersController {
 	constructor(private readonly userService: UserService) {}
