@@ -1,15 +1,6 @@
 import type { Request, Response } from 'express';
 
-import {
-	Body,
-	Controller,
-	HttpCode,
-	Post,
-	Req,
-	Res,
-	UnauthorizedException,
-	Version
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Req, Res, Version } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { AuthDto } from './auth.dto';
@@ -28,19 +19,8 @@ export class AuthController {
 	@HttpCode(200)
 	@Post('sign-in')
 	@Version('1.0')
-	async sigIn(@Body() authDto: AuthDto, @Res({ passthrough: true }) res: Response) {
-		const { refreshToken, createdAt, updatedAt, ...user } = await this.authService.signIn(authDto);
-
-		this.authService.removeRefreshTokenFromResponse(res);
-		this.authService.addRefreshTokenToResponse(res, refreshToken);
-
-		const responseData = {
-			...user,
-			createdAt,
-			updatedAt
-		};
-
-		return responseData;
+	async signIn(@Body() authDto: AuthDto, @Res({ passthrough: true }) res: Response) {
+		return await this.authService.signIn(res, authDto);
 	}
 
 	@ApiOperation({ summary: 'Register a new user' })
@@ -51,15 +31,7 @@ export class AuthController {
 	@Post('sign-up')
 	@Version('1.0')
 	async signUp(@Body() authDto: AuthDto, @Res({ passthrough: true }) res: Response) {
-		const { refreshToken, createdAt, updatedAt, ...user } = await this.authService.signUp(authDto);
-
-		this.authService.addRefreshTokenToResponse(res, refreshToken);
-
-		return {
-			...user,
-			createdAt,
-			updatedAt
-		};
+		return await this.authService.signUp(res, authDto);
 	}
 
 	@ApiOperation({ summary: 'Sign out the current user' })
@@ -71,7 +43,7 @@ export class AuthController {
 	@Post('sign-out')
 	@Version('1.0')
 	signOut(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-		return this.authService.signOut(res, req.cookies[this.authService.REFRESH_TOKEN_NAME]);
+		return this.authService.signOut(res, req);
 	}
 
 	@ApiOperation({ summary: 'Refresh authentication tokens' })
@@ -81,18 +53,6 @@ export class AuthController {
 	@Post('refresh-tokens')
 	@Version('1.0')
 	async refreshTokens(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-		const refreshTokenFromReq: string = req.cookies[this.authService.REFRESH_TOKEN_NAME];
-
-		if (!refreshTokenFromReq) {
-			this.authService.removeRefreshTokenFromResponse(res);
-
-			return new UnauthorizedException('Refresh token not found');
-		}
-
-		const { refreshToken, ...response } = await this.authService.refreshTokens(refreshTokenFromReq);
-
-		this.authService.addRefreshTokenToResponse(res, refreshToken);
-
-		return response;
+		return await this.authService.refreshTokens(req, res);
 	}
 }

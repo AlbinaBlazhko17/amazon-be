@@ -1,5 +1,5 @@
 import { verify } from 'argon2';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 import {
 	BadRequestException,
@@ -26,17 +26,23 @@ export class AuthService {
 		private readonly jwtService: JwtService
 	) {}
 
-	async signIn(authDto: AuthDto) {
-		const user = await this.validateUser(authDto);
+	async signIn(res: Response, authDto: AuthDto) {
+		const { createdAt, updatedAt, ...user } = await this.validateUser(authDto);
 
 		const tokens = this.issueToken(user.id);
+
+		this.removeRefreshTokenFromResponse(res);
+		this.addRefreshTokenToResponse(res, tokens.refreshToken);
+
 		return {
 			...user,
-			...tokens
+			...tokens,
+			createdAt,
+			updatedAt
 		};
 	}
 
-	async signUp(authDto: AuthDto) {
+	async signUp(res: Response, authDto: AuthDto) {
 		const oldUser = await this.userService.findByEmail(authDto.email);
 
 		if (oldUser) throw new BadRequestException('User already exists');
@@ -48,17 +54,23 @@ export class AuthService {
 			avatarUrl: null
 		};
 
-		const user = await this.userService.create(newUser);
+		const { createdAt, updatedAt, ...user } = await this.userService.create(newUser);
 
 		const tokens = this.issueToken(user.id);
 
+		this.addRefreshTokenToResponse(res, tokens.refreshToken);
+
 		return {
 			...removePassword(user),
-			...tokens
+			...tokens,
+			createdAt,
+			updatedAt
 		};
 	}
 
-	async signOut(res: Response, refreshToken: string | undefined) {
+	async signOut(res: Response, req: Request) {
+		const refreshToken = req.cookies[this.REFRESH_TOKEN_NAME];
+
 		if (!refreshToken) throw new UnauthorizedException('No refresh token found');
 
 		const payload = await this.jwtService.verifyAsync(refreshToken);
@@ -75,28 +87,16 @@ export class AuthService {
 		};
 	}
 
-	addRefreshTokenToResponse(res: Response, refreshToken: string) {
-		const expiresIn = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+	async refreshTokens(req: Request, res: Response) {
+		const refreshTokenFromReq: string = req.cookies[this.REFRESH_TOKEN_NAME];
 
-		res.cookie(this.REFRESH_TOKEN_NAME, refreshToken, {
-			httpOnly: true,
-			domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN : 'localhost',
-			secure: process.env.NODE_ENV === 'production',
-			sameSite: 'strict',
-			expires: expiresIn
-		});
-	}
+		if (!refreshTokenFromReq) {
+			this.removeRefreshTokenFromResponse(res);
 
-	removeRefreshTokenFromResponse(res: Response) {
-		res.clearCookie(this.REFRESH_TOKEN_NAME, {
-			domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN : 'localhost',
-			secure: process.env.NODE_ENV === 'production',
-			sameSite: 'strict'
-		});
-	}
+			return new UnauthorizedException('Refresh token not found');
+		}
 
-	async refreshTokens(refreshToken: string) {
-		const payload = await this.jwtService.verifyAsync(refreshToken);
+		const payload = await this.jwtService.verifyAsync(refreshTokenFromReq);
 
 		if (!payload) throw new UnauthorizedException('Invalid refresh token');
 
@@ -106,13 +106,15 @@ export class AuthService {
 
 		const tokens = this.issueToken(Number(user.id));
 
+		this.addRefreshTokenToResponse(res, tokens.refreshToken);
+
 		return {
 			...removePassword(user),
 			...tokens
 		};
 	}
 
-	private issueToken(userId: number) {
+	issueToken(userId: number) {
 		const payload = { id: userId };
 
 		const accessToken = this.jwtService.sign(payload, {
@@ -138,5 +140,25 @@ export class AuthService {
 		if (!isPasswordValid) throw new UnauthorizedException('Invalid password');
 
 		return removePassword(user);
+	}
+
+	private addRefreshTokenToResponse(res: Response, refreshToken: string) {
+		const expiresIn = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+		res.cookie(this.REFRESH_TOKEN_NAME, refreshToken, {
+			httpOnly: true,
+			domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN : 'localhost',
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: 'strict',
+			expires: expiresIn
+		});
+	}
+
+	private removeRefreshTokenFromResponse(res: Response) {
+		res.clearCookie(this.REFRESH_TOKEN_NAME, {
+			domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN : 'localhost',
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: 'strict'
+		});
 	}
 }
