@@ -8,7 +8,8 @@ import {
 	Get,
 	HttpCode,
 	Patch,
-	Req
+	Req,
+	Version
 } from '@nestjs/common';
 import {
 	ApiBearerAuth,
@@ -34,6 +35,7 @@ export class UsersController {
 	@Auth()
 	@HttpCode(200)
 	@Get()
+	@Version('1.0')
 	@ApiOperation({ summary: 'Get all users' })
 	@ApiResponse({ status: 200, description: 'Return all users' })
 	async findAll() {
@@ -43,6 +45,7 @@ export class UsersController {
 	@Auth()
 	@HttpCode(200)
 	@Get('/favorites/:id')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Get user favorites by ID' })
 	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
 	@ApiResponse({ status: 200, description: 'Return user favorites' })
@@ -62,6 +65,7 @@ export class UsersController {
 	@Auth()
 	@HttpCode(200)
 	@Get(':id')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Get user by ID' })
 	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
 	@ApiResponse({ status: 200, description: 'Return user by ID' })
@@ -81,6 +85,7 @@ export class UsersController {
 	@Auth()
 	@HttpCode(200)
 	@Patch(':id')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Update user' })
 	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
 	@ApiBody({ type: UserDto, description: 'User data to update' })
@@ -107,6 +112,7 @@ export class UsersController {
 	@Auth()
 	@HttpCode(200)
 	@Delete(':id')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Delete user' })
 	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
 	@ApiResponse({ status: 200, description: 'User deleted successfully' })

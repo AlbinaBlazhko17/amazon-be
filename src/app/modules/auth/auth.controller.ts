@@ -1,6 +1,15 @@
 import type { Request, Response } from 'express';
 
-import { Body, Controller, HttpCode, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	HttpCode,
+	Post,
+	Req,
+	Res,
+	UnauthorizedException,
+	Version
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { AuthDto } from './auth.dto';
@@ -18,6 +27,7 @@ export class AuthController {
 	@ApiResponse({ status: 401, description: 'Invalid credentials' })
 	@HttpCode(200)
 	@Post('sign-in')
+	@Version('1.0')
 	async sigIn(@Body() authDto: AuthDto, @Res({ passthrough: true }) res: Response) {
 		const { refreshToken, createdAt, updatedAt, ...user } = await this.authService.signIn(authDto);
 
@@ -39,6 +49,7 @@ export class AuthController {
 	@ApiResponse({ status: 400, description: 'Invalid data or user already exists' })
 	@HttpCode(200)
 	@Post('sign-up')
+	@Version('1.0')
 	async signUp(@Body() authDto: AuthDto, @Res({ passthrough: true }) res: Response) {
 		const { refreshToken, createdAt, updatedAt, ...user } = await this.authService.signUp(authDto);
 
@@ -58,6 +69,7 @@ export class AuthController {
 	@Auth()
 	@HttpCode(200)
 	@Post('sign-out')
+	@Version('1.0')
 	signOut(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
 		return this.authService.signOut(res, req.cookies[this.authService.REFRESH_TOKEN_NAME]);
 	}
@@ -67,6 +79,7 @@ export class AuthController {
 	@ApiResponse({ status: 401, description: 'Invalid or expired refresh token' })
 	@HttpCode(200)
 	@Post('refresh-tokens')
+	@Version('1.0')
 	async refreshTokens(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
 		const refreshTokenFromReq: string = req.cookies[this.authService.REFRESH_TOKEN_NAME];
 

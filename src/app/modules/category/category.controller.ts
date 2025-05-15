@@ -8,7 +8,8 @@ import {
 	Get,
 	Patch,
 	Post,
-	Req
+	Req,
+	Version
 } from '@nestjs/common';
 import {
 	ApiBearerAuth,
@@ -30,6 +31,7 @@ export class CategoryController {
 	constructor(private readonly categoryService: CategoryService) {}
 
 	@Get()
+	@Version('1.0')
 	@ApiOperation({ summary: 'Get all categories' })
 	@ApiResponse({ status: 200, description: 'Return all categories' })
 	async findAll() {
@@ -37,6 +39,7 @@ export class CategoryController {
 	}
 
 	@Get(':id')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Get category by ID' })
 	@ApiParam({ name: 'id', description: 'Category ID', example: '1' })
 	@ApiResponse({ status: 200, description: 'Return a category by ID' })
@@ -55,6 +58,7 @@ export class CategoryController {
 	}
 
 	@Get('slug/:slug')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Get category by slug' })
 	@ApiParam({ name: 'slug', description: 'Category slug', example: 'electronics' })
 	@ApiResponse({ status: 200, description: 'Return a category by slug' })
@@ -72,6 +76,7 @@ export class CategoryController {
 
 	@Auth()
 	@Post()
+	@Version('1.0')
 	@ApiBearerAuth()
 	@ApiOperation({ summary: 'Create new category' })
 	@ApiBody({ type: CategoryDto })
@@ -83,6 +88,7 @@ export class CategoryController {
 
 	@Auth()
 	@Patch(':id')
+	@Version('1.0')
 	@ApiBearerAuth()
 	@ApiOperation({ summary: 'Update category' })
 	@ApiParam({ name: 'id', description: 'Category ID', example: '1' })
@@ -105,6 +111,7 @@ export class CategoryController {
 
 	@Auth()
 	@Delete(':id')
+	@Version('1.0')
 	@ApiBearerAuth()
 	@ApiOperation({ summary: 'Delete category' })
 	@ApiParam({ name: 'id', description: 'Category ID', example: '1' })
