@@ -74,39 +74,4 @@ export class UserRepository {
 			}
 		});
 	}
-
-	async findByIdWithFavorites(
-		id: number,
-		select?: Prisma.UserSelect
-	): Promise<Partial<User> | null> {
-		return this.prisma.user.findUnique({
-			where: { id },
-			select: {
-				...this.userSelectFields,
-				favorites: {
-					select: {
-						id: true,
-						product: {
-							select: {
-								id: true,
-								name: true,
-								description: true,
-								price: true,
-								imagesUrl: true,
-								categoryId: true,
-								category: {
-									select: {
-										id: true,
-										name: true,
-										slug: true
-									}
-								}
-							}
-						}
-					}
-				},
-				...select
-			}
-		});
-	}
 }

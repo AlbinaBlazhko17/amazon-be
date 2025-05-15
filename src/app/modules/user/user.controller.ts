@@ -20,6 +20,7 @@ import {
 
 import { Auth } from '../auth/decorators/auth.decorator';
 
+import { CurrentUser } from './decorators/user.decorator';
 import { UserDto } from './user.dto';
 import { UserService } from './user.service';
 
@@ -40,15 +41,16 @@ export class UsersController {
 	}
 
 	@Auth()
-	@HttpCode(200)
-	@Get('/favorites/:id')
+	@Get('me')
 	@Version('1.0')
-	@ApiOperation({ summary: 'Get user favorites by ID' })
-	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
-	@ApiResponse({ status: 200, description: 'Return user favorites' })
-	@ApiResponse({ status: 400, description: 'Invalid ID format' })
-	async findFavorites(@Param('id', ParseIntPipe) id: number) {
-		return await this.userService.findByIdWithFavorites(id);
+	@ApiBearerAuth('JWT-auth')
+	@ApiOperation({ summary: 'Get current user' })
+	@ApiResponse({ status: 200, description: 'Return current user' })
+	@ApiResponse({ status: 401, description: 'Unauthorized' })
+	@ApiResponse({ status: 403, description: 'Forbidden' })
+	@ApiResponse({ status: 404, description: 'User not found' })
+	async getMe(@CurrentUser('id') id: number) {
+		return this.userService.getMe(id);
 	}
 
 	@Auth()

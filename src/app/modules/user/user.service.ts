@@ -12,6 +12,18 @@ import { removePassword } from '@/utils/helpers/remove-password';
 export class UserService {
 	constructor(private readonly userRepository: UserRepository) {}
 
+	async getMe(id: number): Promise<Partial<User> | null> {
+		const user = await this.userRepository.findById(id, {
+			password: false
+		});
+
+		if (!user) {
+			throw new NotFoundException('User not found');
+		}
+
+		return removePassword(user);
+	}
+
 	async create(data: UserDto) {
 		const { password, ...rest } = data;
 		const hashedPassword = await hash(password);
@@ -59,14 +71,77 @@ export class UserService {
 		return removePassword(user);
 	}
 
-	async findByIdWithFavorites(id: number): Promise<Partial<User> | null> {
-		const user = await this.userRepository.findByIdWithFavorites(id);
+	async addToFavorites(userId: number, productId: number): Promise<Partial<User>> {
+		const user = await this.userRepository.findById(userId);
 
 		if (!user) {
 			throw new NotFoundException('User not found');
 		}
 
-		return user;
+		const updatedUser = await this.userRepository.update(userId, {
+			favorites: {
+				connect: { id: productId }
+			}
+		});
+
+		if (!updatedUser) {
+			throw new NotFoundException('User not found');
+		}
+
+		return removePassword(updatedUser);
+	}
+
+	async removeFromFavorites(userId: number, productId: number): Promise<Partial<User>> {
+		const user = await this.userRepository.findById(userId);
+
+		if (!user) {
+			throw new NotFoundException('User not found');
+		}
+
+		const updatedUser = await this.userRepository.update(userId, {
+			favorites: {
+				disconnect: { id: productId }
+			}
+		});
+
+		if (!updatedUser) {
+			throw new NotFoundException('User not found');
+		}
+
+		return removePassword(updatedUser);
+	}
+
+	async findUserFavorites(id: number) {
+		const user = await this.userRepository.findById(id, {
+			favorites: {
+				select: {
+					id: true,
+					product: {
+						select: {
+							id: true,
+							name: true,
+							description: true,
+							price: true,
+							imagesUrl: true,
+							categoryId: true,
+							category: {
+								select: {
+									id: true,
+									name: true,
+									slug: true
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+
+		if (!user) {
+			throw new NotFoundException('User not found');
+		}
+
+		return removePassword(user);
 	}
 
 	async findAll(params?: { select?: Prisma.UserSelect }): Promise<Partial<User>[]> {

@@ -164,27 +164,6 @@ describe('UsersService', () => {
 		});
 	});
 
-	describe('findByIdWithFavorites', () => {
-		it('should find user with favorites', async () => {
-			const userWithFavorites = {
-				...mockUser,
-				favorites: [{ id: 1, name: 'Favorite Item' }]
-			};
-			mockUserRepository.findByIdWithFavorites.mockResolvedValue(userWithFavorites);
-
-			const result = await service.findByIdWithFavorites(1);
-
-			expect(mockUserRepository.findByIdWithFavorites).toHaveBeenCalledWith(1);
-			expect(result).toEqual(userWithFavorites);
-		});
-
-		it('should throw NotFoundException if user not found', async () => {
-			mockUserRepository.findByIdWithFavorites.mockResolvedValue(null);
-
-			await expect(service.findByIdWithFavorites(999)).rejects.toThrow(NotFoundException);
-		});
-	});
-
 	describe('findAll', () => {
 		it('should return all users without passwords', async () => {
 			const users = [mockUser, { ...mockUser, id: 2 }];
