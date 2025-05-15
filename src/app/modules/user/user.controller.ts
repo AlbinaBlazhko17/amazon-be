@@ -1,14 +1,12 @@
-import { Request } from 'express';
-
 import {
-	BadRequestException,
 	Body,
 	Controller,
 	Delete,
 	Get,
 	HttpCode,
+	Param,
+	ParseIntPipe,
 	Patch,
-	Req,
 	Version
 } from '@nestjs/common';
 import {
@@ -24,7 +22,6 @@ import { Auth } from '../auth/decorators/auth.decorator';
 
 import { UserDto } from './user.dto';
 import { UserService } from './user.service';
-import { removePassword } from '@/utils/helpers/remove-password';
 
 @ApiTags('users')
 @ApiBearerAuth('JWT-auth')
@@ -50,16 +47,8 @@ export class UsersController {
 	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
 	@ApiResponse({ status: 200, description: 'Return user favorites' })
 	@ApiResponse({ status: 400, description: 'Invalid ID format' })
-	async findFavorites(@Req() req: Request) {
-		const idFromParams = req.params.id;
-
-		if (isNaN(Number(idFromParams))) {
-			throw new BadRequestException('Invalid ID format');
-		}
-
-		const userId = Number(idFromParams);
-
-		return await this.userService.findByIdWithFavorites(userId);
+	async findFavorites(@Param('id', ParseIntPipe) id: number) {
+		return await this.userService.findByIdWithFavorites(id);
 	}
 
 	@Auth()
@@ -70,16 +59,8 @@ export class UsersController {
 	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
 	@ApiResponse({ status: 200, description: 'Return user by ID' })
 	@ApiResponse({ status: 400, description: 'Invalid ID format' })
-	async findById(@Req() req: Request) {
-		const idFromParams = req.params.id;
-
-		if (isNaN(Number(idFromParams))) {
-			throw new BadRequestException('Invalid ID format');
-		}
-
-		const userId = Number(idFromParams);
-
-		return await this.userService.findById(userId);
+	async findById(@Param('id', ParseIntPipe) id: number) {
+		return await this.userService.findById(id);
 	}
 
 	@Auth()
@@ -91,48 +72,19 @@ export class UsersController {
 	@ApiBody({ type: UserDto, description: 'User data to update' })
 	@ApiResponse({ status: 200, description: 'User updated successfully' })
 	@ApiResponse({ status: 400, description: 'Invalid ID format' })
-	async update(
-		@Req()
-		req: Request,
-		@Body() userDto: Partial<UserDto>
-	) {
-		const idFromParams = req.params.id;
-
-		if (isNaN(Number(idFromParams))) {
-			throw new BadRequestException('Invalid ID format');
-		}
-
-		const userId = Number(idFromParams);
-
-		const updatedUser = await this.userService.update(userId, userDto);
-
-		return removePassword(updatedUser);
+	async update(@Param('id', ParseIntPipe) id: number, @Body() userDto: Partial<UserDto>) {
+		return await this.userService.update(id, userDto);
 	}
 
 	@Auth()
-	@HttpCode(200)
+	@HttpCode(204)
 	@Delete(':id')
 	@Version('1.0')
 	@ApiOperation({ summary: 'Delete user' })
 	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
-	@ApiResponse({ status: 200, description: 'User deleted successfully' })
+	@ApiResponse({ status: 204, description: 'User deleted successfully' })
 	@ApiResponse({ status: 400, description: 'Invalid ID format or User not found' })
-	async delete(@Req() req: Request) {
-		const idFromParams = req.params.id;
-
-		if (isNaN(Number(idFromParams))) {
-			throw new BadRequestException('Invalid ID format');
-		}
-		const userId = Number(idFromParams);
-
-		const user = await this.userService.findById(userId);
-		if (!user) {
-			throw new BadRequestException('User not found');
-		}
-
-		await this.userService.delete(userId);
-		return {
-			message: 'User deleted successfully'
-		};
+	async delete(@Param('id', ParseIntPipe) id: number) {
+		await this.userService.delete(id);
 	}
 }

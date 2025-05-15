@@ -29,13 +29,15 @@ export class UserService {
 		return user;
 	}
 
-	async update(id: number, data: Partial<UserDto>): Promise<User> {
+	async update(id: number, data: Partial<UserDto>): Promise<Partial<User>> {
 		const user = await this.userRepository.findById(id);
 		if (!user) {
 			throw new Error(`User with ID ${id} not found`);
 		}
 
-		return this.userRepository.update(id, data);
+		const updatedUser = await this.userRepository.update(id, data);
+
+		return removePassword(updatedUser);
 	}
 
 	async delete(id: number): Promise<User> {

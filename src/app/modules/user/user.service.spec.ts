@@ -105,7 +105,11 @@ describe('UsersService', () => {
 
 			expect(mockUserRepository.findById).toHaveBeenCalledWith(1);
 			expect(mockUserRepository.update).toHaveBeenCalledWith(1, updateData);
-			expect(result).toEqual({ ...mockUser, ...updateData });
+			expect(result).toEqual({
+				id: mockUser.id,
+				email: mockUser.email,
+				...updateData
+			});
 		});
 
 		it('should throw error if user not found', async () => {
