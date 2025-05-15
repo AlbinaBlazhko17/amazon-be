@@ -67,7 +67,7 @@ describe('AuthService', () => {
 
 			const result = await service.signIn(mockResponse, mockAuthDto);
 
-			expect(result).toEqual({ ...mockUser, ...mockTokens });
+			expect(result).toEqual({ ...mockUser, accessToken: mockTokens.accessToken });
 			expect(service['validateUser']).toHaveBeenCalledWith(mockAuthDto);
 			expect(service.issueToken).toHaveBeenCalledWith(mockUser.id);
 			expect(mockResponse.cookie).toHaveBeenCalled();
@@ -112,7 +112,7 @@ describe('AuthService', () => {
 			expect(mockResponse.cookie).toHaveBeenCalled();
 			expect(result).toEqual({
 				...mockUser,
-				...mockTokens
+				accessToken: mockTokens.accessToken
 			});
 		});
 	});
@@ -211,7 +211,7 @@ describe('AuthService', () => {
 				expect(result).toEqual({
 					...mockUser,
 					password: undefined,
-					...mockTokens
+					accessToken: mockTokens.accessToken
 				});
 			});
 		});

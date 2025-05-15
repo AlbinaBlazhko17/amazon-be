@@ -29,14 +29,14 @@ export class AuthService {
 	async signIn(res: Response, authDto: AuthDto) {
 		const { createdAt, updatedAt, ...user } = await this.validateUser(authDto);
 
-		const tokens = this.issueToken(user.id);
+		const { accessToken, refreshToken } = this.issueToken(user.id);
 
 		this.removeRefreshTokenFromResponse(res);
-		this.addRefreshTokenToResponse(res, tokens.refreshToken);
+		this.addRefreshTokenToResponse(res, refreshToken);
 
 		return {
 			...user,
-			...tokens,
+			accessToken,
 			createdAt,
 			updatedAt
 		};
@@ -56,13 +56,13 @@ export class AuthService {
 
 		const { createdAt, updatedAt, ...user } = await this.userService.create(newUser);
 
-		const tokens = this.issueToken(user.id);
+		const { accessToken, refreshToken } = this.issueToken(user.id);
 
-		this.addRefreshTokenToResponse(res, tokens.refreshToken);
+		this.addRefreshTokenToResponse(res, refreshToken);
 
 		return {
 			...removePassword(user),
-			...tokens,
+			accessToken,
 			createdAt,
 			updatedAt
 		};
@@ -104,13 +104,13 @@ export class AuthService {
 
 		if (!user) throw new NotFoundException('User not found');
 
-		const tokens = this.issueToken(Number(user.id));
+		const { accessToken, refreshToken } = this.issueToken(Number(user.id));
 
-		this.addRefreshTokenToResponse(res, tokens.refreshToken);
+		this.addRefreshTokenToResponse(res, refreshToken);
 
 		return {
 			...removePassword(user),
-			...tokens
+			accessToken
 		};
 	}
 
