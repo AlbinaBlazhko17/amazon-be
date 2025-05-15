@@ -86,12 +86,23 @@ export class UserRepository {
 				favorites: {
 					select: {
 						id: true,
-						name: true,
-						price: true,
-						imagesUrl: true,
-						slug: true,
-						createdAt: true,
-						updatedAt: true
+						product: {
+							select: {
+								id: true,
+								name: true,
+								description: true,
+								price: true,
+								imagesUrl: true,
+								categoryId: true,
+								Category: {
+									select: {
+										id: true,
+										name: true,
+										slug: true
+									}
+								}
+							}
+						}
 					}
 				},
 				...select

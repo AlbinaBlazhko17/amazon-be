@@ -30,6 +30,21 @@ export class UsersController {
 
 	@Auth()
 	@HttpCode(200)
+	@Get('/favorites/:id')
+	async findFavorites(@Req() req: Request) {
+		const idFromParams = req.params.id;
+
+		if (isNaN(Number(idFromParams))) {
+			throw new BadRequestException('Invalid ID format');
+		}
+
+		const userId = Number(idFromParams);
+
+		return await this.userService.findByIdWithFavorites(userId);
+	}
+
+	@Auth()
+	@HttpCode(200)
 	@Get(':id')
 	async findById(@Req() req: Request) {
 		const idFromParams = req.params.id;

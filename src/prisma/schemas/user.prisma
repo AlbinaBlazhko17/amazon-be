@@ -8,10 +8,22 @@ model User {
 
   orders    Order[]
   reviews   Review[]
-  favorites Product[]
+  favorites UserFavorite[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("user")
+}
+
+model UserFavorite {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int      @map("user_id")
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int      @map("product_id")
+  addedAt   DateTime @default(now()) @map("added_at")
+
+  @@unique([userId, productId])
+  @@map("user_favorite")
 }
