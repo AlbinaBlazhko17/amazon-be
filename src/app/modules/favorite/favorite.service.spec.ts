@@ -31,6 +31,11 @@ describe('FavoriteService', () => {
 		}
 	};
 
+	const paginationQueryDto = {
+		skip: 1,
+		take: 2
+	};
+
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -39,6 +44,7 @@ describe('FavoriteService', () => {
 					provide: FavoriteRepository,
 					useValue: {
 						getUserFavorites: jest.fn(),
+						getUserPaginatedFavorites: jest.fn(),
 						addToFavorites: jest.fn(),
 						removeFromFavorites: jest.fn()
 					}
@@ -111,31 +117,63 @@ describe('FavoriteService', () => {
 
 	describe('getFavorites', () => {
 		it('should return user favorites successfully', async () => {
-			jest.spyOn(userService, 'findById').mockResolvedValue(mockUser);
-			jest.spyOn(favoriteRepository, 'getUserFavorites').mockResolvedValue([mockFavorite]);
+			const mockPaginatedFavorites = {
+				data: [mockFavorite],
+				meta: {
+					page: 1,
+					limit: 10,
+					totalItems: 3,
+					totalPages: 1,
+					hasPreviousPage: false,
+					hasNextPage: false
+				}
+			};
 
-			const result = await favoriteService.getFavorites(1);
+			jest.spyOn(userService, 'findById').mockResolvedValue(mockUser);
+			jest
+				.spyOn(favoriteRepository, 'getUserPaginatedFavorites')
+				.mockResolvedValue(mockPaginatedFavorites);
+
+			const result = await favoriteService.getFavorites(1, paginationQueryDto);
 
 			expect(userService.findById).toHaveBeenCalledWith(1);
-			expect(favoriteRepository.getUserFavorites).toHaveBeenCalledWith(1);
+			expect(favoriteRepository.getUserPaginatedFavorites).toHaveBeenCalledWith(
+				1,
+				paginationQueryDto
+			);
 			expect(result).toEqual([mockFavorite.product]);
 		});
 
 		it('should throw NotFoundException if user is not found', async () => {
 			jest.spyOn(userService, 'findById').mockResolvedValue(null);
 
-			await expect(favoriteService.getFavorites(1)).rejects.toThrow(
+			await expect(favoriteService.getFavorites(1, {})).rejects.toThrow(
 				new NotFoundException('User not found')
 			);
 		});
 
 		it('should return empty array if user has no favorites', async () => {
-			jest.spyOn(userService, 'findById').mockResolvedValue(mockUser);
-			jest.spyOn(favoriteRepository, 'getUserFavorites').mockResolvedValue([]);
+			const emptyPaginatedFavorites = {
+				data: [],
+				meta: {
+					page: 1,
+					limit: 10,
+					totalItems: 3,
+					totalPages: 1,
+					hasPreviousPage: false,
+					hasNextPage: false
+				}
+			};
 
-			const result = await favoriteService.getFavorites(1);
+			jest.spyOn(userService, 'findById').mockResolvedValue(mockUser);
+			jest
+				.spyOn(favoriteRepository, 'getUserPaginatedFavorites')
+				.mockResolvedValue(emptyPaginatedFavorites);
+
+			const result = await favoriteService.getFavorites(1, paginationQueryDto);
 
 			expect(result).toEqual([]);
+			expect(result.length).toBe(0);
 		});
 	});
 });

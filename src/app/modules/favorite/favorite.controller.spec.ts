@@ -46,9 +46,9 @@ describe('FavoritesController', () => {
 
 			mockFavoritesService.getFavorites.mockResolvedValue(expectedResult);
 
-			const result = await controller.findFavorites(userId);
+			const result = await controller.findFavorites(userId, {});
 
-			expect(favoritesService.getFavorites).toHaveBeenCalledWith(userId);
+			expect(favoritesService.getFavorites).toHaveBeenCalledWith(userId, {});
 			expect(result).toEqual(expectedResult);
 		});
 	});

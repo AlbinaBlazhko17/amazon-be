@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
+import { IFavoriteQuery } from './interfaces/favorite-query.interface';
+import { PaginationQueryDto } from '@/common/pagination/dto/pagination-query.dto';
+import { PaginatedResult } from '@/common/pagination/interfaces/paginated-result.interface';
+import { PaginationService } from '@/common/pagination/pagination.service';
 import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
@@ -22,7 +26,10 @@ export class FavoriteRepository {
 		}
 	};
 
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly pagination: PaginationService
+	) {}
 
 	async addToFavorites(userId: number, productId: number) {
 		return await this.prisma.userFavorite.create({
@@ -45,8 +52,8 @@ export class FavoriteRepository {
 		});
 	}
 
-	async getUserFavorites(userId: number) {
-		return this.prisma.userFavorite.findMany({
+	async getUserFavorites(userId: number): Promise<IFavoriteQuery[]> {
+		return await this.prisma.userFavorite.findMany({
 			where: {
 				userId
 			},
@@ -54,5 +61,21 @@ export class FavoriteRepository {
 				...this.userFavoriteSelectFields
 			}
 		});
+	}
+
+	async getUserPaginatedFavorites(
+		userId: number,
+		paginationQueryDto: PaginationQueryDto
+	): Promise<PaginatedResult<IFavoriteQuery>> {
+		return await this.pagination.paginate(
+			this.prisma.userFavorite,
+			paginationQueryDto,
+			{ userId },
+			{ addedAt: 'desc' },
+			{},
+			{
+				...this.userFavoriteSelectFields
+			}
+		);
 	}
 }

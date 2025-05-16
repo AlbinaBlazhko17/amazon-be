@@ -6,6 +6,7 @@ import {
 	Param,
 	ParseIntPipe,
 	Post,
+	Query,
 	Version
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
@@ -15,6 +16,7 @@ import { CurrentUser } from '../user/decorators/user.decorator';
 import { UserDto } from '../user/user.dto';
 
 import { FavoriteService } from './favorite.service';
+import { PaginationQueryDto } from '@/common/pagination/dto/pagination-query.dto';
 
 @Controller('/users/me')
 export class FavoritesController {
@@ -28,8 +30,11 @@ export class FavoritesController {
 	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
 	@ApiResponse({ status: 200, description: 'Return user favorites' })
 	@ApiResponse({ status: 400, description: 'Invalid ID format' })
-	async findFavorites(@CurrentUser('id') userId: number) {
-		return await this.favoriteService.getFavorites(userId);
+	async findFavorites(
+		@CurrentUser('id') userId: number,
+		@Query() paginationQuery: PaginationQueryDto
+	) {
+		return await this.favoriteService.getFavorites(userId, paginationQuery);
 	}
 
 	@Auth()

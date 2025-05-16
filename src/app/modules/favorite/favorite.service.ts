@@ -3,6 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 
 import { FavoriteRepository } from './favorite.repository';
+import { PaginationQueryDto } from '@/common/pagination/dto/pagination-query.dto';
 
 @Injectable()
 export class FavoriteService {
@@ -41,16 +42,19 @@ export class FavoriteService {
 		await this.favoriteRepository.removeFromFavorites(userId, productId);
 	}
 
-	async getFavorites(userId: number) {
+	async getFavorites(userId: number, paginationQueryDto: PaginationQueryDto) {
 		const user = await this.userService.findById(userId);
 
 		if (!user) {
 			throw new NotFoundException('User not found');
 		}
 
-		const favorites = await this.favoriteRepository.getUserFavorites(userId);
+		const favorites = await this.favoriteRepository.getUserPaginatedFavorites(
+			userId,
+			paginationQueryDto
+		);
 
-		const mappedFavorites = favorites.map(favorite => ({
+		const mappedFavorites = favorites.data.map(favorite => ({
 			...favorite.product
 		}));
 
