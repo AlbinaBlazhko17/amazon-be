@@ -6,6 +6,8 @@ import { Prisma, User } from '@prisma/client';
 
 import { UserDto } from './user.dto';
 import { UserRepository } from './user.repository';
+import { PaginationQueryDto } from '@/common/pagination/dto/pagination-query.dto';
+import { PaginatedResult } from '@/common/pagination/interfaces/paginated-result.interface';
 import { removePassword } from '@/utils/helpers/remove-password';
 
 @Injectable()
@@ -144,8 +146,11 @@ export class UserService {
 		return removePassword(user);
 	}
 
-	async findAll(params?: { select?: Prisma.UserSelect }): Promise<Partial<User>[]> {
-		return await this.userRepository.findAll({
+	async findAll(
+		paginationQueryDto: PaginationQueryDto,
+		params?: { select?: Prisma.UserSelect }
+	): Promise<PaginatedResult<Partial<User>>> {
+		return await this.userRepository.findAll(paginationQueryDto, {
 			select: {
 				...params?.select,
 				password: false

@@ -31,6 +31,11 @@ describe('UsersService', () => {
 		name: 'Test User'
 	};
 
+	const paginationQueryDto = {
+		skip: 1,
+		take: 2
+	};
+
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -167,11 +172,12 @@ describe('UsersService', () => {
 	describe('findAll', () => {
 		it('should return all users without passwords', async () => {
 			const users = [mockUser, { ...mockUser, id: 2 }];
+
 			mockUserRepository.findAll.mockResolvedValue(users);
 
-			const result = await service.findAll();
+			const result = await service.findAll(paginationQueryDto);
 
-			expect(mockUserRepository.findAll).toHaveBeenCalledWith({
+			expect(mockUserRepository.findAll).toHaveBeenCalledWith(paginationQueryDto, {
 				select: { password: false }
 			});
 			expect(result).toEqual(users);
@@ -181,9 +187,9 @@ describe('UsersService', () => {
 			const selectParams = { name: true, email: true };
 			mockUserRepository.findAll.mockResolvedValue([{ name: 'Test', email: 'test@example.com' }]);
 
-			await service.findAll({ select: selectParams });
+			await service.findAll(paginationQueryDto, { select: selectParams });
 
-			expect(mockUserRepository.findAll).toHaveBeenCalledWith({
+			expect(mockUserRepository.findAll).toHaveBeenCalledWith(paginationQueryDto, {
 				select: { ...selectParams, password: false }
 			});
 		});

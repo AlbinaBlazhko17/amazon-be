@@ -15,6 +15,11 @@ describe('UsersController', () => {
 		delete: jest.fn()
 	};
 
+	const paginationQueryDto = {
+		skip: 1,
+		take: 2
+	};
+
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [UsersController],
@@ -41,7 +46,7 @@ describe('UsersController', () => {
 			const users = [{ id: 1, name: 'Test User', email: 'test@test.com' }];
 			mockUserService.findAll.mockResolvedValue(users);
 
-			expect(await controller.findAll()).toBe(users);
+			expect(await controller.findAll(paginationQueryDto)).toBe(users);
 			expect(userService.findAll).toHaveBeenCalled();
 		});
 	});

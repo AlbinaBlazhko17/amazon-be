@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 
 import { Prisma, User } from '@prisma/client';
 
+import { PaginationQueryDto } from '@/common/pagination/dto/pagination-query.dto';
+import { PaginatedResult } from '@/common/pagination/interfaces/paginated-result.interface';
+import { PaginationService } from '@/common/pagination/pagination.service';
 import { PrismaService } from '@/prisma/prisma.service';
 
 export interface IUserRepository {
@@ -25,7 +28,10 @@ export class UserRepository {
 		updatedAt: true
 	};
 
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly pagination: PaginationService
+	) {}
 
 	async create(data: Prisma.UserCreateInput): Promise<User> {
 		return this.prisma.user.create({ data });
@@ -44,15 +50,20 @@ export class UserRepository {
 		});
 	}
 
-	async findAll(params?: { select?: Prisma.UserSelect }): Promise<Partial<User>[]> {
+	async findAll(
+		paginationQueryDto: PaginationQueryDto,
+		params?: { select?: Prisma.UserSelect }
+	): Promise<PaginatedResult<User>> {
 		const { select = {} } = params || {};
 
-		return this.prisma.user.findMany({
-			select: {
-				...this.userSelectFields,
-				...select
-			}
-		});
+		return this.pagination.paginate(
+			this.prisma.user,
+			paginationQueryDto,
+			{},
+			{ createdAt: 'desc' },
+			{},
+			{ ...this.userSelectFields, ...select, password: false }
+		);
 	}
 
 	async findById(id: number, select?: Prisma.UserSelect): Promise<Partial<User> | null> {

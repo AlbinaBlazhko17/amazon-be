@@ -7,6 +7,7 @@ import {
 	Param,
 	ParseIntPipe,
 	Patch,
+	Query,
 	Version
 } from '@nestjs/common';
 import {
@@ -23,6 +24,8 @@ import { Auth } from '../auth/decorators/auth.decorator';
 import { CurrentUser } from './decorators/user.decorator';
 import { UserDto } from './user.dto';
 import { UserService } from './user.service';
+import { PaginationQueryDto } from '@/common/pagination/dto/pagination-query.dto';
+import { PaginatedResult } from '@/common/pagination/interfaces/paginated-result.interface';
 
 @ApiTags('users')
 @ApiBearerAuth('JWT-auth')
@@ -36,8 +39,10 @@ export class UsersController {
 	@Version('1.0')
 	@ApiOperation({ summary: 'Get all users' })
 	@ApiResponse({ status: 200, description: 'Return all users' })
-	async findAll() {
-		return this.userService.findAll();
+	async findAll(
+		@Query() paginatedQuery: PaginationQueryDto
+	): Promise<PaginatedResult<Partial<UserDto>>> {
+		return this.userService.findAll(paginatedQuery);
 	}
 
 	@Auth()
