@@ -8,6 +8,7 @@ import {
 	ParseIntPipe,
 	Patch,
 	Post,
+	Query,
 	Version
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
@@ -17,6 +18,7 @@ import { CurrentUser } from '../user/decorators/user.decorator';
 
 import { ReviewDto } from './review.dto';
 import { ReviewService } from './review.service';
+import { PaginationQueryDto } from '@/common/pagination/dto/pagination-query.dto';
 
 @Controller('products/:productId/reviews')
 export class ReviewController {
@@ -27,8 +29,11 @@ export class ReviewController {
 	@ApiParam({ name: 'productId', type: 'number', description: 'Product ID' })
 	@ApiOperation({ summary: 'Get all reviews' })
 	@ApiResponse({ status: 200, description: 'Return all reviews' })
-	async findAllByProductId(@Param('productId', ParseIntPipe) productId: number) {
-		return await this.reviewService.findAllByProductId(productId);
+	async findAllByProductId(
+		@Param('productId', ParseIntPipe) productId: number,
+		@Query() paginationQuery: PaginationQueryDto
+	) {
+		return await this.reviewService.findAllByProductId(productId, paginationQuery);
 	}
 
 	@Get(':reviewId')

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 import { Prisma } from '@prisma/client';
 
+import { PaginationQueryDto } from '@/common/pagination/dto/pagination-query.dto';
+import { PaginationService } from '@/common/pagination/pagination.service';
 import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
@@ -29,16 +31,22 @@ export class ReviewRepository {
 		}
 	};
 
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly pagination: PaginationService
+	) {}
 
-	async findAllByProductId(productId: number) {
-		return await this.prisma.review.findMany({
-			where: { productId },
-
-			select: {
+	async findAllByProductId(productId: number, paginationQueryDto: PaginationQueryDto) {
+		return await this.pagination.paginate(
+			this.prisma.review,
+			paginationQueryDto,
+			{ productId },
+			{ createdAt: 'desc' },
+			{},
+			{
 				...this.reviewSelectFields
 			}
-		});
+		);
 	}
 
 	async findById(id: number) {

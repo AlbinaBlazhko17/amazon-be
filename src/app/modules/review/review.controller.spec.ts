@@ -16,6 +16,11 @@ describe('ReviewController', () => {
 		delete: jest.fn()
 	};
 
+	const paginationQueryDto = {
+		skip: 1,
+		take: 2
+	};
+
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [ReviewController],
@@ -45,10 +50,10 @@ describe('ReviewController', () => {
 			const reviews = [{ id: 1, text: 'Great product', rating: 5 }];
 			mockReviewService.findAllByProductId.mockResolvedValue(reviews);
 
-			const result = await controller.findAllByProductId(productId);
+			const result = await controller.findAllByProductId(productId, paginationQueryDto);
 
 			expect(result).toEqual(reviews);
-			expect(reviewService.findAllByProductId).toHaveBeenCalledWith(productId);
+			expect(reviewService.findAllByProductId).toHaveBeenCalledWith(productId, paginationQueryDto);
 		});
 	});
 
