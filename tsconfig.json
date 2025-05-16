@@ -28,7 +28,8 @@
 			"@modules/*": ["./src/app/modules/*"],
 			"@core/*": ["./src/core/*"],
 			"@config/*": ["src/config/*"],
-			"@utils/*": ["src/utils/*"]
+			"@utils/*": ["src/utils/*"],
+			"@common/*": ["src/common/*"]
 		}
 	}
 }
