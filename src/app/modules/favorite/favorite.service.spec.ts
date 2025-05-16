@@ -141,7 +141,7 @@ describe('FavoriteService', () => {
 				1,
 				paginationQueryDto
 			);
-			expect(result).toEqual([mockFavorite.product]);
+			expect(result.data).toEqual([mockFavorite.product]);
 		});
 
 		it('should throw NotFoundException if user is not found', async () => {
@@ -172,8 +172,8 @@ describe('FavoriteService', () => {
 
 			const result = await favoriteService.getFavorites(1, paginationQueryDto);
 
-			expect(result).toEqual([]);
-			expect(result.length).toBe(0);
+			expect(result.data).toEqual([]);
+			expect(result.data.length).toBe(0);
 		});
 	});
 });

@@ -58,6 +58,9 @@ export class FavoriteService {
 			...favorite.product
 		}));
 
-		return mappedFavorites;
+		return {
+			data: mappedFavorites,
+			meat: favorites.meta
+		};
 	}
 }
