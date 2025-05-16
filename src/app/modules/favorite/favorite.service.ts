@@ -60,7 +60,7 @@ export class FavoriteService {
 
 		return {
 			data: mappedFavorites,
-			meat: favorites.meta
+			meta: favorites.meta
 		};
 	}
 }
