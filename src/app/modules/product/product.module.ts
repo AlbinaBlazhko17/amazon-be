@@ -10,8 +10,9 @@ import { PaginationModule } from '@/common/pagination/pagination.module';
 import { PaginationService } from '@/common/pagination/pagination.service';
 
 @Module({
-	controllers: [ProductController, PaginationModule, CategoryModule],
+	imports: [PaginationModule, CategoryModule],
+	controllers: [ProductController],
 	providers: [ProductService, ProductRepository, PaginationService, CategoryService],
-	exports: [ProductService]
+	exports: [ProductService, ProductRepository]
 })
 export class ProductModule {}
