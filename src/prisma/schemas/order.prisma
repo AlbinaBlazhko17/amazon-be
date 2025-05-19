@@ -6,9 +6,10 @@ enum OrderStatus {
 }
 
 model Order {
-  id     Int         @id @default(autoincrement())
-  status OrderStatus @default(PENDING)
-  items  OrderItem[]
+  id         Int         @id @default(autoincrement())
+  status     OrderStatus @default(PENDING)
+  totalPrice Float       @default(0.0) @map("total_price")
+  items      OrderItem[]
 
   userId Int?  @map("user_id")
   user   User? @relation(fields: [userId], references: [id])
@@ -20,9 +21,8 @@ model Order {
 }
 
 model OrderItem {
-  id         Int   @id @default(autoincrement())
-  quantity   Int
-  totalPrice Float @map("total_price")
+  id       Int @id @default(autoincrement())
+  quantity Int @default(1)
 
   orderId   Int?     @map("order_id")
   order     Order?   @relation(fields: [orderId], references: [id])
