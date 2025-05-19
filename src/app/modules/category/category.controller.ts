@@ -49,7 +49,7 @@ export class CategoryController {
 		return await this.categoryService.findById(id);
 	}
 
-	@Get('slug/:slug')
+	@Get('slugs/:slug')
 	@Version('1.0')
 	@ApiOperation({ summary: 'Get category by slug' })
 	@ApiParam({ name: 'slug', description: 'Category slug', example: 'electronics' })
