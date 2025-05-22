@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { Prisma } from '@prisma/client';
 
+import { ProductFilterDto } from './dto/product-filter.dto';
 import { PaginationQueryDto } from '@/common/pagination/dto/pagination-query.dto';
 import { PaginationService } from '@/common/pagination/pagination.service';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -30,22 +31,19 @@ export class ProductRepository {
 		});
 	}
 
-	async findAllPaginated(paginationQueryDto: PaginationQueryDto) {
+	async findAllPaginated(filterDto: ProductFilterDto) {
+		const where = this.buildWhereClause(filterDto);
+
 		return this.pagination.paginate(
 			this.prisma.product,
-			paginationQueryDto,
+			filterDto,
+			where,
 			{
-				where: {},
-				include: {
-					category: true
-				}
+				id: 'asc'
 			},
 			{
-				orderBy: {
-					id: 'asc'
-				}
+				category: true
 			},
-			{},
 			{}
 		);
 	}
@@ -111,5 +109,43 @@ export class ProductRepository {
 		return this.prisma.product.findFirst({
 			where: { name }
 		});
+	}
+
+	private buildWhereClause(filterDto: ProductFilterDto) {
+		const { name, description, search } = filterDto;
+		const where: Prisma.ProductWhereInput = {};
+
+		if (name) {
+			where.name = {
+				contains: name,
+				mode: 'insensitive'
+			};
+		}
+
+		if (description) {
+			where.description = {
+				contains: description,
+				mode: 'insensitive'
+			};
+		}
+
+		if (search) {
+			where.OR = [
+				{
+					name: {
+						contains: search,
+						mode: 'insensitive'
+					}
+				},
+				{
+					description: {
+						contains: search,
+						mode: 'insensitive'
+					}
+				}
+			];
+		}
+
+		return where;
 	}
 }

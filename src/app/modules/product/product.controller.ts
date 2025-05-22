@@ -7,11 +7,13 @@ import {
 	ParseIntPipe,
 	Patch,
 	Post,
-	Query
+	Query,
+	Version
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { ProductDto } from './product.dto';
+import { ProductFilterDto } from './dto/product-filter.dto';
+import { ProductDto } from './dto/product.dto';
 import { ProductService } from './product.service';
 import { PaginationQueryDto } from '@/common/pagination/dto/pagination-query.dto';
 
@@ -21,13 +23,15 @@ export class ProductController {
 	constructor(private readonly productService: ProductService) {}
 
 	@Get()
+	@Version('1.0')
 	@ApiOperation({ summary: 'Get all products' })
 	@ApiResponse({ status: 200, description: 'Return all products with pagination' })
-	async findAll(@Query() paginationQueryDto: PaginationQueryDto) {
-		return this.productService.findAll(paginationQueryDto);
+	async findAll(@Query() filterDto: ProductFilterDto) {
+		return this.productService.findAll(filterDto);
 	}
 
 	@Get(':id')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Get product by id' })
 	@ApiResponse({ status: 200, description: 'Return product by id' })
 	async findById(@Query('id', ParseIntPipe) id: number) {
@@ -35,6 +39,7 @@ export class ProductController {
 	}
 
 	@Get('slugs/:slug')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Get product by slug' })
 	@ApiResponse({ status: 200, description: 'Return product by slug' })
 	async findBySlug(@Query('slug') slug: string) {
@@ -42,6 +47,7 @@ export class ProductController {
 	}
 
 	@Get('categories/:categoryId')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Get products by category id' })
 	@ApiResponse({ status: 200, description: 'Return products by category id' })
 	async findByCategoryId(
@@ -52,6 +58,7 @@ export class ProductController {
 	}
 
 	@Post()
+	@Version('1.0')
 	@ApiOperation({ summary: 'Create product' })
 	@ApiResponse({ status: 201, description: 'Product created successfully' })
 	async create(@Body() productDto: Required<ProductDto>) {
@@ -59,6 +66,7 @@ export class ProductController {
 	}
 
 	@Patch(':id')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Update product' })
 	@ApiResponse({ status: 200, description: 'Product updated successfully' })
 	async update(@Query('id', ParseIntPipe) id: number, @Body() productDto: ProductDto) {
@@ -66,6 +74,7 @@ export class ProductController {
 	}
 
 	@Delete(':id')
+	@Version('1.0')
 	@HttpCode(204)
 	@ApiOperation({ summary: 'Delete product' })
 	@ApiResponse({ status: 200, description: 'Product deleted successfully' })

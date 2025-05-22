@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { CategoryService } from '../category/category.service';
 
-import { ProductDto } from './product.dto';
+import { ProductDto } from './dto/product.dto';
 import { ProductRepository } from './product.repository';
 import { ProductService } from './product.service';
 import { PaginationQueryDto } from '@/common/pagination/dto/pagination-query.dto';

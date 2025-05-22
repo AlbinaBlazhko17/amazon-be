@@ -2,7 +2,8 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 
 import { CategoryService } from '../category/category.service';
 
-import { ProductDto } from './product.dto';
+import { ProductFilterDto } from './dto/product-filter.dto';
+import { ProductDto } from './dto/product.dto';
 import { ProductRepository } from './product.repository';
 import { PaginationQueryDto } from '@/common/pagination/dto/pagination-query.dto';
 import { slugify } from '@/utils/helpers/slugify';
@@ -14,8 +15,8 @@ export class ProductService {
 		private readonly categoryService: CategoryService
 	) {}
 
-	async findAll(paginationQueryDto: PaginationQueryDto) {
-		return await this.productRepository.findAllPaginated(paginationQueryDto);
+	async findAll(filterDto: ProductFilterDto) {
+		return await this.productRepository.findAllPaginated(filterDto);
 	}
 
 	async findById(id: number) {
