@@ -13,6 +13,7 @@ export class ProductRepository {
 		id: true,
 		name: true,
 		description: true,
+		imagesUrl: true,
 		price: true,
 		slug: true,
 		createdAt: true,
