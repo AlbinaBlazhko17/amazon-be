@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Query, Version } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { OrderStatus } from '@prisma/client';
@@ -18,6 +18,7 @@ export class OrderController {
 
 	@Auth()
 	@Get()
+	@Version('1.0')
 	@ApiOperation({ summary: 'Get all orders' })
 	@ApiResponse({ status: 200, description: 'Return all orders' })
 	async findAll(@Query() paginationQuery: PaginationQueryDto) {
@@ -26,6 +27,7 @@ export class OrderController {
 
 	@Auth()
 	@Post('')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Create order' })
 	@ApiResponse({ status: 201, description: 'Order created' })
 	async create(@CurrentUser('id') userId: number, @Body() orderItemsData: CreateOrderItemDto[]) {
@@ -34,6 +36,7 @@ export class OrderController {
 
 	@Auth()
 	@Get(':id')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Get order by id' })
 	@ApiResponse({ status: 200, description: 'Return order by id' })
 	async findById(@Query('id') id: number) {
@@ -42,6 +45,7 @@ export class OrderController {
 
 	@Auth()
 	@Delete(':id')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Delete order' })
 	@ApiResponse({ status: 204, description: 'Order deleted' })
 	async delete(@Query('id') id: number) {
@@ -50,6 +54,7 @@ export class OrderController {
 
 	@Auth()
 	@Patch(':id/payed')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Update order status to payed' })
 	@ApiResponse({ status: 200, description: 'Order status updated to payed' })
 	async updateStatusToPayed(@Query('id') id: number) {
@@ -58,6 +63,7 @@ export class OrderController {
 
 	@Auth()
 	@Patch(':id/shipped')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Update order status to shipped' })
 	@ApiResponse({ status: 200, description: 'Order status updated to shipped' })
 	async updateStatusToShipped(@Query('id') id: number) {
@@ -66,6 +72,7 @@ export class OrderController {
 
 	@Auth()
 	@Patch(':id/delivered')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Update order status to delivered' })
 	@ApiResponse({ status: 200, description: 'Order status updated to delivered' })
 	async updateStatusToDelivered(@Query('id') id: number) {
@@ -74,6 +81,7 @@ export class OrderController {
 
 	@Auth()
 	@Get('/users/me/orders')
+	@Version('1.0')
 	@ApiOperation({ summary: 'Get orders by user id' })
 	@ApiResponse({ status: 200, description: 'Return orders by user id' })
 	async findByUserId(
