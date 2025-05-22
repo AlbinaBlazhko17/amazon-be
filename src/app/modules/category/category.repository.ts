@@ -10,6 +10,8 @@ export class CategoryRepository {
 	private readonly categorySelectFields: Prisma.CategorySelect = {
 		id: true,
 		name: true,
+		slug: true,
+		icon: true,
 		createdAt: true,
 		updatedAt: true
 	};
@@ -17,7 +19,11 @@ export class CategoryRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async findAll() {
-		return await this.prisma.category.findMany();
+		return await this.prisma.category.findMany({
+			orderBy: {
+				id: 'asc'
+			}
+		});
 	}
 
 	async findById(id: number) {
