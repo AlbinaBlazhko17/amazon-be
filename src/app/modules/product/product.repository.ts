@@ -9,6 +9,22 @@ import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 export class ProductRepository {
+	private readonly productSelect: Prisma.ProductSelect = {
+		id: true,
+		name: true,
+		description: true,
+		price: true,
+		slug: true,
+		createdAt: true,
+		updatedAt: true,
+		category: {
+			select: {
+				id: true,
+				name: true,
+				slug: true
+			}
+		}
+	};
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly pagination: PaginationService
@@ -25,8 +41,8 @@ export class ProductRepository {
 	async findBySlug(slug: string) {
 		return this.prisma.product.findUnique({
 			where: { slug },
-			include: {
-				category: true
+			select: {
+				...this.productSelect
 			}
 		});
 	}
@@ -41,10 +57,10 @@ export class ProductRepository {
 			{
 				id: 'asc'
 			},
+			{},
 			{
-				category: true
-			},
-			{}
+				...this.productSelect
+			}
 		);
 	}
 
@@ -53,29 +69,23 @@ export class ProductRepository {
 			this.prisma.product,
 			paginationQueryDto,
 			{
-				where: {
-					categoryId
-				}
+				categoryId
 			},
 			{
-				orderBy: {
-					id: 'asc'
-				}
+				id: 'asc'
 			},
+			{},
 			{
-				include: {
-					category: true
-				}
-			},
-			{}
+				...this.productSelect
+			}
 		);
 	}
 
 	async findById(id: number) {
 		return this.prisma.product.findUnique({
 			where: { id },
-			include: {
-				category: true
+			select: {
+				...this.productSelect
 			}
 		});
 	}
@@ -83,8 +93,8 @@ export class ProductRepository {
 	async create(data: Prisma.ProductCreateInput) {
 		return this.prisma.product.create({
 			data,
-			include: {
-				category: true
+			select: {
+				...this.productSelect
 			}
 		});
 	}
@@ -93,8 +103,8 @@ export class ProductRepository {
 		return this.prisma.product.update({
 			where: { id },
 			data,
-			include: {
-				category: true
+			select: {
+				...this.productSelect
 			}
 		});
 	}
