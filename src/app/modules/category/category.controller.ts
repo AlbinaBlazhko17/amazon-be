@@ -73,32 +73,32 @@ export class CategoryController {
 	}
 
 	@Auth()
-	@Patch(':id')
+	@Patch(':categoryId')
 	@Version('1.0')
 	@ApiBearerAuth('JWT-auth')
 	@ApiOperation({ summary: 'Update category' })
-	@ApiParam({ name: 'id', description: 'Category ID', example: '1' })
+	@ApiParam({ name: 'categoryId', description: 'Category ID', example: '1' })
 	@ApiBody({ type: CategoryDto })
 	@ApiResponse({ status: 200, description: 'Category successfully updated' })
 	@ApiResponse({ status: 400, description: 'Invalid ID format' })
 	@ApiResponse({ status: 401, description: 'Unauthorized' })
 	@ApiResponse({ status: 404, description: 'Category not found' })
-	async update(@Param('id', ParseIntPipe) id: number, @Body() body: CategoryDto) {
+	async update(@Param('categoryId', ParseIntPipe) id: number, @Body() body: CategoryDto) {
 		return await this.categoryService.update(id, body);
 	}
 
 	@Auth()
-	@Delete(':id')
+	@Delete(':categoryId')
 	@Version('1.0')
 	@HttpCode(204)
 	@ApiBearerAuth('JWT-auth')
 	@ApiOperation({ summary: 'Delete category' })
-	@ApiParam({ name: 'id', description: 'Category ID', example: '1' })
+	@ApiParam({ name: 'categoryId', description: 'Category ID', example: '1' })
 	@ApiResponse({ status: 204, description: 'Category successfully deleted' })
 	@ApiResponse({ status: 400, description: 'Invalid ID format' })
 	@ApiResponse({ status: 401, description: 'Unauthorized' })
 	@ApiResponse({ status: 404, description: 'Category not found' })
-	async delete(@Param('id', ParseIntPipe) id: number) {
+	async delete(@Param('categoryId', ParseIntPipe) id: number) {
 		await this.categoryService.delete(id);
 	}
 }

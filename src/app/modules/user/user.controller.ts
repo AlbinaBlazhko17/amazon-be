@@ -60,38 +60,38 @@ export class UsersController {
 
 	@Auth()
 	@HttpCode(200)
-	@Get(':id')
+	@Get(':userId')
 	@Version('1.0')
 	@ApiOperation({ summary: 'Get user by ID' })
-	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
+	@ApiParam({ name: 'userId', type: 'number', description: 'User ID' })
 	@ApiResponse({ status: 200, description: 'Return user by ID' })
 	@ApiResponse({ status: 400, description: 'Invalid ID format' })
-	async findById(@Param('id', ParseIntPipe) id: number) {
+	async findById(@Param('userId', ParseIntPipe) id: number) {
 		return await this.userService.findById(id);
 	}
 
 	@Auth()
 	@HttpCode(200)
-	@Patch(':id')
+	@Patch(':userId')
 	@Version('1.0')
 	@ApiOperation({ summary: 'Update user' })
-	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
+	@ApiParam({ name: 'userId', type: 'number', description: 'User ID' })
 	@ApiBody({ type: UserDto, description: 'User data to update' })
 	@ApiResponse({ status: 200, description: 'User updated successfully' })
 	@ApiResponse({ status: 400, description: 'Invalid ID format' })
-	async update(@Param('id', ParseIntPipe) id: number, @Body() userDto: Partial<UserDto>) {
+	async update(@Param('userId', ParseIntPipe) id: number, @Body() userDto: Partial<UserDto>) {
 		return await this.userService.update(id, userDto);
 	}
 
 	@Auth()
 	@HttpCode(204)
-	@Delete(':id')
+	@Delete(':userId')
 	@Version('1.0')
 	@ApiOperation({ summary: 'Delete user' })
-	@ApiParam({ name: 'id', type: 'number', description: 'User ID' })
+	@ApiParam({ name: 'userId', type: 'number', description: 'User ID' })
 	@ApiResponse({ status: 204, description: 'User deleted successfully' })
 	@ApiResponse({ status: 400, description: 'Invalid ID format or User not found' })
-	async delete(@Param('id', ParseIntPipe) id: number) {
+	async delete(@Param('userId', ParseIntPipe) id: number) {
 		await this.userService.delete(id);
 	}
 }

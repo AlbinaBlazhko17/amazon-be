@@ -35,47 +35,47 @@ export class OrderController {
 	}
 
 	@Auth()
-	@Get(':id')
+	@Get(':orderId')
 	@Version('1.0')
 	@ApiOperation({ summary: 'Get order by id' })
 	@ApiResponse({ status: 200, description: 'Return order by id' })
-	async findById(@Query('id') id: number) {
+	async findById(@Query('orderId') id: number) {
 		return this.orderService.findById(id);
 	}
 
 	@Auth()
-	@Delete(':id')
+	@Delete(':orderId')
 	@Version('1.0')
 	@ApiOperation({ summary: 'Delete order' })
 	@ApiResponse({ status: 204, description: 'Order deleted' })
-	async delete(@Query('id') id: number) {
+	async delete(@Query('orderId') id: number) {
 		await this.orderService.delete(id);
 	}
 
 	@Auth()
-	@Patch(':id/payed')
+	@Patch(':orderId/payed')
 	@Version('1.0')
 	@ApiOperation({ summary: 'Update order status to payed' })
 	@ApiResponse({ status: 200, description: 'Order status updated to payed' })
-	async updateStatusToPayed(@Query('id') id: number) {
+	async updateStatusToPayed(@Query('orderId') id: number) {
 		return this.orderService.updateStatus(id, OrderStatus.PAYED);
 	}
 
 	@Auth()
-	@Patch(':id/shipped')
+	@Patch(':orderId/shipped')
 	@Version('1.0')
 	@ApiOperation({ summary: 'Update order status to shipped' })
 	@ApiResponse({ status: 200, description: 'Order status updated to shipped' })
-	async updateStatusToShipped(@Query('id') id: number) {
+	async updateStatusToShipped(@Query('orderId') id: number) {
 		return this.orderService.updateStatus(id, OrderStatus.SHIPPED);
 	}
 
 	@Auth()
-	@Patch(':id/delivered')
+	@Patch(':orderId/delivered')
 	@Version('1.0')
 	@ApiOperation({ summary: 'Update order status to delivered' })
 	@ApiResponse({ status: 200, description: 'Order status updated to delivered' })
-	async updateStatusToDelivered(@Query('id') id: number) {
+	async updateStatusToDelivered(@Query('orderId') id: number) {
 		return this.orderService.updateStatus(id, OrderStatus.DELIVERED);
 	}
 

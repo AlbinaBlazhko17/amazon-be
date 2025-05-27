@@ -30,11 +30,11 @@ export class ProductController {
 		return this.productService.findAll(filterDto);
 	}
 
-	@Get(':id')
+	@Get(':productId')
 	@Version('1.0')
 	@ApiOperation({ summary: 'Get product by id' })
 	@ApiResponse({ status: 200, description: 'Return product by id' })
-	async findById(@Query('id', ParseIntPipe) id: number) {
+	async findById(@Query('productId', ParseIntPipe) id: number) {
 		return this.productService.findById(id);
 	}
 
@@ -65,20 +65,20 @@ export class ProductController {
 		return this.productService.create(productDto);
 	}
 
-	@Patch(':id')
+	@Patch(':productId')
 	@Version('1.0')
 	@ApiOperation({ summary: 'Update product' })
 	@ApiResponse({ status: 200, description: 'Product updated successfully' })
-	async update(@Query('id', ParseIntPipe) id: number, @Body() productDto: ProductDto) {
+	async update(@Query('productId', ParseIntPipe) id: number, @Body() productDto: ProductDto) {
 		return this.productService.update(id, productDto);
 	}
 
-	@Delete(':id')
+	@Delete(':productId')
 	@Version('1.0')
 	@HttpCode(204)
 	@ApiOperation({ summary: 'Delete product' })
 	@ApiResponse({ status: 200, description: 'Product deleted successfully' })
-	async delete(@Query('id', ParseIntPipe) id: number) {
+	async delete(@Query('productId', ParseIntPipe) id: number) {
 		return this.productService.delete(id);
 	}
 }
