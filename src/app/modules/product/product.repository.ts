@@ -16,6 +16,8 @@ export class ProductRepository {
 		imagesUrl: true,
 		price: true,
 		slug: true,
+		averageRating: true,
+		reviewsCount: true,
 		createdAt: true,
 		updatedAt: true,
 		category: {

@@ -59,21 +59,42 @@ export class ReviewRepository {
 	}
 
 	async create(data: Prisma.ReviewCreateInput) {
-		return await this.prisma.review.create({
-			data,
-			select: {
-				...this.reviewSelectFields
+		return await this.prisma.$transaction(async tx => {
+			const review = await tx.review.create({
+				data,
+				select: {
+					...this.reviewSelectFields
+				}
+			});
+
+			if (data.product?.connect?.id) {
+				await this.updateProductRating(tx, data.product.connect.id);
 			}
+
+			return review;
 		});
 	}
 
 	async update(id: number, data: Prisma.ReviewUpdateInput) {
-		return await this.prisma.review.update({
-			where: { id },
-			data,
-			select: {
-				...this.reviewSelectFields
+		return await this.prisma.$transaction(async tx => {
+			const currentReview = await tx.review.findUnique({
+				where: { id },
+				select: { productId: true }
+			});
+
+			const updatedReview = await tx.review.update({
+				where: { id },
+				data,
+				select: {
+					...this.reviewSelectFields
+				}
+			});
+
+			if (currentReview?.productId) {
+				await this.updateProductRating(tx, currentReview.productId);
 			}
+
+			return updatedReview;
 		});
 	}
 
@@ -84,5 +105,40 @@ export class ReviewRepository {
 				...this.reviewSelectFields
 			}
 		});
+	}
+
+	private async updateProductRating(tx: Prisma.TransactionClient, productId: number) {
+		const stats = await tx.review.aggregate({
+			where: { productId },
+			_avg: { rating: true },
+			_count: { rating: true }
+		});
+
+		const averageRating = stats._avg.rating || 0;
+		const reviewsCount = stats._count.rating || 0;
+
+		await tx.product.update({
+			where: { id: productId },
+			data: {
+				averageRating: Number(averageRating.toFixed(2)),
+				reviewsCount
+			}
+		});
+	}
+
+	async recalculateProductRating(productId: number) {
+		return await this.prisma.$transaction(async tx => {
+			await this.updateProductRating(tx, productId);
+		});
+	}
+
+	async recalculateAllProductRatings() {
+		const products = await this.prisma.product.findMany({
+			select: { id: true }
+		});
+
+		for (const product of products) {
+			await this.recalculateProductRating(product.id);
+		}
 	}
 }

@@ -6,6 +6,9 @@ model Product {
   imagesUrl   String[] @map("image_url")
   slug        String   @unique
 
+  averageRating Float? @default(0) @map("average_rating")
+  reviewsCount  Int    @default(0) @map("reviews_count")
+
   orderItems OrderItem[]
   reviews    Review[]
   categoryId Int?        @map("category_id")
