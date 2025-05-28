@@ -5,6 +5,7 @@ import { Global, type MiddlewareConsumer, Module, type NestModule } from '@nestj
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, HttpAdapterHost } from '@nestjs/core';
 
+import { CacheService } from './cache/cache.service';
 import { AppExceptionsFilter } from './filters/app-exceptions.filter';
 import { TransformResponseInterceptor } from './interceptors/transform-response.interceptor';
 import { LoggerService } from './logger/logger.service';
@@ -31,7 +32,7 @@ import { PrismaModule } from '@/prisma/prisma.module';
 					...(username && { username }),
 					...(password && { password }),
 					no_ready_check: true,
-					ttl: 10
+					ttl: 0
 				};
 			},
 			inject: [ConfigService]
@@ -50,9 +51,10 @@ import { PrismaModule } from '@/prisma/prisma.module';
 			provide: APP_INTERCEPTOR,
 			useClass: TransformResponseInterceptor
 		},
-		LoggerService
+		LoggerService,
+		CacheService
 	],
-	exports: [LoggerService]
+	exports: [LoggerService, CacheService]
 })
 export class CoreModule implements NestModule {
 	configure(consumer: MiddlewareConsumer) {

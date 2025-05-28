@@ -5,6 +5,7 @@ model Product {
   price       Float
   imagesUrl   String[] @map("image_url")
   slug        String   @unique
+  isFeatured  Boolean  @default(false) @map("is_featured")
 
   averageRating Float? @default(0) @map("average_rating")
   reviewsCount  Int    @default(0) @map("reviews_count")

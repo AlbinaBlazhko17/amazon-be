@@ -102,4 +102,12 @@ export class ProductService {
 		}
 		return product;
 	}
+
+	async countFeatured() {
+		return await this.productRepository.countFeatured();
+	}
+
+	async findFeatured() {
+		return await this.productRepository.findFeatured();
+	}
 }

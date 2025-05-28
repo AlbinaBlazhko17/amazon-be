@@ -21,7 +21,8 @@ export class CacheService implements OnModuleDestroy {
 	}
 
 	async set(key: string, value: any, ttl?: number): Promise<void> {
-		await this.cache.set(key, value, ttl);
+		const ttlInMs = ttl ? ttl * 1000 : undefined;
+		await this.cache.set(key, value, ttlInMs);
 	}
 
 	async del(key: string): Promise<void> {

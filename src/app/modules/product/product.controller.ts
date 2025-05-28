@@ -30,6 +30,14 @@ export class ProductController {
 		return this.productService.findAll(filterDto);
 	}
 
+	@Get('featured')
+	@Version('1.0')
+	@ApiOperation({ summary: 'Get featured products' })
+	@ApiResponse({ status: 200, description: 'Return featured products' })
+	async findFeatured() {
+		return this.productService.findFeatured();
+	}
+
 	@Get(':productId')
 	@Version('1.0')
 	@ApiOperation({ summary: 'Get product by id' })
@@ -77,8 +85,8 @@ export class ProductController {
 	@Version('1.0')
 	@HttpCode(204)
 	@ApiOperation({ summary: 'Delete product' })
-	@ApiResponse({ status: 200, description: 'Product deleted successfully' })
+	@ApiResponse({ status: 204, description: 'Product deleted successfully' })
 	async delete(@Query('productId', ParseIntPipe) id: number) {
-		return this.productService.delete(id);
+		await this.productService.delete(id);
 	}
 }
