@@ -1,9 +1,11 @@
 import { redisStore } from 'cache-manager-redis-store';
+import { join } from 'path';
 
 import { CacheModule } from '@nestjs/cache-manager';
 import { Global, type MiddlewareConsumer, Module, type NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, HttpAdapterHost } from '@nestjs/core';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 import { CacheService } from './cache/cache.service';
 import { AppExceptionsFilter } from './filters/app-exceptions.filter';
@@ -18,6 +20,10 @@ import { PrismaModule } from '@/prisma/prisma.module';
 		ConfigModule.forRoot({
 			isGlobal: true,
 			load: [appConfig]
+		}),
+		ServeStaticModule.forRoot({
+			rootPath: join(__dirname, '../../', 'client'),
+			serveRoot: '/static'
 		}),
 		CacheModule.registerAsync({
 			imports: [ConfigModule],
