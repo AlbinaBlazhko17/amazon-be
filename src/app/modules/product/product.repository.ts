@@ -173,7 +173,7 @@ export class ProductRepository {
 				...this.productSelect
 			},
 			orderBy: {
-				updatedAt: 'desc'
+				id: 'asc'
 			}
 		});
 
